@@ -1,8 +1,8 @@
 # TwitterBot <img src="https://upload.wikimedia.org/wikipedia/pt/thumb/3/3d/Twitter_logo_2012.svg/1267px-Twitter_logo_2012.svg.png" width="30"> - How To Create A Twitter Bot With Python 
-Twitter Bot creation following tutorial from CS Dojo:  
-https://www.youtube.com/watch?v=W0wWwglE1Vc&amp;t=147s
+In order to start please sign up in [Twitter's Developer Account](https://developer.twitter.com).  
+After this, create a file **keys.py** from file [keys_format.py](keys_format.py) filling each field with your personal info.
   
-Install needed:
+Installation needed:
 ```shell 
 pip install tweepy
 pip install beautifulsoup4
