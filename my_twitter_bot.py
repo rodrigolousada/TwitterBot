@@ -34,7 +34,7 @@ def reply_to_tweets():
     #DEV NOTE: for TEST purpose use 376831330887036928 in last_seen_id.txt
     last_seen_id = retrieve_last_seen_id(FILE_NAME)
     mentions = api.mentions_timeline(last_seen_id, tweet_mode="extended")
-    for mention in reversed(mentions[1:]):
+    for mention in reversed(mentions):
         print(str(mention.id) + ' - ' + mention.full_text, flush=True)
         last_seen_id = mention.id
         store_last_seen_id(last_seen_id, FILE_NAME)
@@ -42,7 +42,7 @@ def reply_to_tweets():
             print("found #helloworld!", flush=True)
             print("responding back...", flush=True)
             api.update_status('@' + mention.user.screen_name 
-                                    + ' #HelloWorld is a good hashtag!', mention.id)
+                                    + ' Hello World is a good hashtag!', mention.id)
 
 while True:
     reply_to_tweets()
