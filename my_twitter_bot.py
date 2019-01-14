@@ -1,13 +1,20 @@
+from keys import *
 import tweepy
 import time
-from keys import *
+import os
+import requests
+from bs4 import BeautifulSoup as bs
+import cfscrape
 
-print('this is my twitter bot', flush=True)
+print('This is my TwitterBot', flush=True)
 
+# Authentication
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 api = tweepy.API(auth)
 
+
+# =============== REPLY TO MENTIONS ========================
 mentions = api.mentions_timeline()
 
 # print("Mentions keys are: ", mentions[0].__dict__.keys())
@@ -44,6 +51,80 @@ def reply_to_tweets():
             api.update_status('@' + mention.user.screen_name 
                                     + ' Hello World is a good hashtag!', mention.id)
 
-while True:
-    reply_to_tweets()
-    time.sleep(15)
+
+# ==================== Publish Pictures ==================
+
+# model scraping for TwitterBot
+def scrap_images(search_content,limit):
+
+    # website with images
+    url = 'https://www.pexels.com/search/'+ search_content + '/'
+
+    scraper = cfscrape.create_scraper()
+    
+    # download page for parsing
+    page = scraper.get(url)
+    soup = bs(page.text, 'html.parser')
+
+    # locate all elements with image tag
+    image_tags = soup.findAll('img')
+
+    # create directory for model images
+    if not os.path.exists(search_content):
+        os.makedirs(search_content)
+
+    # move to new directory
+    os.chdir(search_content)
+
+    # image file name variable
+    x = 0
+
+    # writing images
+    for image in image_tags:
+        if x >= int(limit):
+            break
+        try:
+            url = image['src']
+            response = scraper.get(url)
+            if response.status_code == 200 and image['class'][0] == 'photo-item__img':
+                with open(search_content + '-' + str(x) + '.jpg', 'wb') as f:
+                    f.write(scraper.get(url).content)
+                    f.close()
+                    x += 1
+        except:
+            pass
+
+
+def publish_image(search_content,limit):
+    scrap_images(search_content,limit)
+
+    # iterates over pictures in folder
+    for image in os.listdir('.'):
+        print("publishing image...", flush=True)
+        api.update_with_media(image)
+        os.remove(image)
+        time.sleep(15)
+
+    # delete directory
+    os.chdir('..')
+    os.rmdir(search_content)
+
+
+# ====================== MAIN ============================
+if __name__ == "__main__":
+
+    while True:
+        query = input("What do you want me to do?\n-> ")
+        if(query.lower()=='publish image'):
+            theme = input("Which theme do you want me to publish about?\n-> ")
+            limit = input("How many?\n-> ")
+            publish_image(theme, limit)
+        elif(query.lower()=='reply to tweets'):
+            while True:
+                reply_to_tweets()
+                time.sleep(15)
+        elif(query.lower()=='quit' or query.lower()=='quit()'):
+            print("Goodbye...")
+            break
+        else:
+            print("Don't recognize command!")
