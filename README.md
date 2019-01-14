@@ -1,5 +1,5 @@
 # TwitterBot - How To Create A Twitter Bot With Python
-In order to start please sign up in [Twitter's Developer Account](https://developer.twitter.com)
+In order to start please sign up in [Twitter's Developer Account](https://developer.twitter.com).  
 After this, create a file **keys.py** from file [keys_format.py](keys_format.py) filling each field with your personal info.
   
 Install needed:
